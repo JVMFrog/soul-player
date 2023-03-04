@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/forYouFragment">
+
+    <fragment
+        app:route="forYou"
+        android:id="@+id/forYouFragment"
+        android:name="com.jvmfrog.soulplayer.fragment.ForYouFragment"
+        android:label="fragment_for_you"
+        tools:layout="@layout/fragment_for_you" />
+    <fragment
+        app:route="songs"
+        android:id="@+id/songsFragment"
+        android:name="com.jvmfrog.soulplayer.fragment.SongsFragment"
+        android:label="fragment_songs"
+        tools:layout="@layout/fragment_songs" />
+    <fragment
+        app:route="albums"
+        android:id="@+id/albumsFragment"
+        android:name="com.jvmfrog.soulplayer.fragment.AlbumsFragment"
+        android:label="fragment_albums"
+        tools:layout="@layout/fragment_albums" />
+    <fragment
+        app:route="artists"
+        android:id="@+id/artistsFragment"
+        android:name="com.jvmfrog.soulplayer.fragment.ArtistsFragment"
+        android:label="fragment_artists"
+        tools:layout="@layout/fragment_artists" />
+    <fragment
+        app:route="playlists"
+        android:id="@+id/playlistsFragment"
+        android:name="com.jvmfrog.soulplayer.fragment.PlaylistsFragment"
+        android:label="fragment_playlists"
+        tools:layout="@layout/fragment_playlists" />
+</navigation>

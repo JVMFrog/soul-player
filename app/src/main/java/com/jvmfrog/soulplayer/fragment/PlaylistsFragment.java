@@ -11,10 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jvmfrog.soulplayer.R;
-import com.jvmfrog.soulplayer.databinding.FragmentMainBinding;
+import com.jvmfrog.soulplayer.databinding.FragmentPlaylistsBinding;
 
-public class MainFragment extends Fragment {
-    private FragmentMainBinding binding;
+public class PlaylistsFragment extends Fragment {
+    private FragmentPlaylistsBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,12 +24,18 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentMainBinding.inflate(inflater, container, false);
+        binding = FragmentPlaylistsBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
