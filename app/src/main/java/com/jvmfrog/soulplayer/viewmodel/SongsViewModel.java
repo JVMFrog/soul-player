@@ -17,13 +17,11 @@ import java.util.List;
 
 public class SongsViewModel extends ViewModel {
     private MutableLiveData<List<SongsModel>> songFilesLiveData = new MutableLiveData<>();
-
     public LiveData<List<SongsModel>> getSongFiles() {
         return songFilesLiveData;
     }
 
     public void loadSongFiles(Context context) {
-        // Получение музыкальных файлов из внешнего хранилища
         List<SongsModel> musicFiles = new ArrayList<>();
 
         ContentResolver musicResolver = context.getContentResolver();
@@ -50,7 +48,6 @@ public class SongsViewModel extends ViewModel {
         if (musicCursor != null) {
             musicCursor.close();
         }
-
         songFilesLiveData.setValue(musicFiles);
     }
 }

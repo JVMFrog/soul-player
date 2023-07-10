@@ -1,6 +1,7 @@
 package com.jvmfrog.soulplayer;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
@@ -178,16 +179,7 @@ public class CustomMediaPlayer {
         return "";
     }
 
-    public Bitmap getCurrentTrackAlbumArt() {
-        if (currentTrackIndex >= 0 && currentTrackIndex < trackList.size()) {
-            metadataRetriever.setDataSource(trackList.get(currentTrackIndex));
-            byte[] albumArt = metadataRetriever.getEmbeddedPicture();
-            if (albumArt != null) {
-                return BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length);
-            }
-        }
-        return null;
-    }
+
 
     public void setSleepTimer(long milliseconds) {
         cancelSleepTimer();
@@ -221,10 +213,6 @@ public class CustomMediaPlayer {
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
-        }
-        if (metadataRetriever != null) {
-            metadataRetriever.release();
-            metadataRetriever = null;
         }
         cancelSleepTimer();
     }
