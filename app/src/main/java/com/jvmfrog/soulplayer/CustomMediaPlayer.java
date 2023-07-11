@@ -1,13 +1,18 @@
 package com.jvmfrog.soulplayer;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.os.CountDownTimer;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +27,16 @@ public class CustomMediaPlayer {
     private SeekBar seekBar;
     private boolean isSeekBarTracking;
     private MediaMetadataRetriever metadataRetriever;
-    private CountDownTimer sleepTimer;
+    private Context context;
 
-    private CustomMediaPlayer() {
+    private CustomMediaPlayer(Context context) {
         trackList = new ArrayList<>();
         currentTrackIndex = 0;
         savedPosition = 0;
         isLooping = false;
         mediaPlayer = new MediaPlayer();
         metadataRetriever = new MediaMetadataRetriever();
+        this.context = context.getApplicationContext();
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -44,9 +50,9 @@ public class CustomMediaPlayer {
         });
     }
 
-    public static CustomMediaPlayer getInstance() {
+    public static CustomMediaPlayer getInstance(Context context) {
         if (instance == null) {
-            instance = new CustomMediaPlayer();
+            instance = new CustomMediaPlayer(context);
         }
         return instance;
     }
@@ -93,12 +99,11 @@ public class CustomMediaPlayer {
                 try {
                     mediaPlayer.setDataSource(trackList.get(currentTrackIndex));
                     mediaPlayer.prepare();
-                } catch (Exception e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             mediaPlayer.start();
-            startSleepTimer(); // Start sleep timer when playing
         }
     }
 
@@ -106,7 +111,6 @@ public class CustomMediaPlayer {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             savedPosition = mediaPlayer.getCurrentPosition();
-            cancelSleepTimer(); // Cancel sleep timer when paused
         }
     }
 
@@ -135,6 +139,10 @@ public class CustomMediaPlayer {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.seekTo(progress);
         }
+    }
+
+    public void setCurrentTrackIndex(int index) {
+        currentTrackIndex = index;
     }
 
     public void addToQueue(String trackPath, boolean addToEnd) {
@@ -179,41 +187,99 @@ public class CustomMediaPlayer {
         return "";
     }
 
-
-
-    public void setSleepTimer(long milliseconds) {
-        cancelSleepTimer();
-
-        sleepTimer = new CountDownTimer(milliseconds, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                
+    public Bitmap getCurrentTrackAlbumArt() {
+        if (currentTrackIndex >= 0 && currentTrackIndex < trackList.size()) {
+            metadataRetriever.setDataSource(trackList.get(currentTrackIndex));
+            byte[] albumArt = metadataRetriever.getEmbeddedPicture();
+            if (albumArt != null) {
+                return BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length);
             }
+        }
+        return null;
+    }
 
-            @Override
-            public void onFinish() {
-                pause();
-            }
+    public void scanMusic() {
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+        String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
+
+        String[] projection = {
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM
         };
-    }
 
-    public void startSleepTimer() {
-        if (sleepTimer != null) {
-            sleepTimer.start();
+        Cursor cursor = contentResolver.query(uri, projection, selection, null, sortOrder);
+        if (cursor != null && cursor.getCount() > 0) {
+            int dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+            while (cursor.moveToNext()) {
+                String path = cursor.getString(dataColumnIndex);
+                trackList.add(path);
+            }
+        }
+        if (cursor != null) {
+            cursor.close();
         }
     }
 
-    public void cancelSleepTimer() {
-        if (sleepTimer != null) {
-            sleepTimer.cancel();
+    public void scanAlbums() {
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+        String[] projection = {
+                MediaStore.Audio.Albums.ALBUM,
+                MediaStore.Audio.Albums.ARTIST,
+                MediaStore.Audio.Albums.NUMBER_OF_SONGS
+        };
+        String sortOrder = MediaStore.Audio.Albums.ALBUM + " ASC";
+
+        Cursor cursor = contentResolver.query(uri, projection, null, null, sortOrder);
+        if (cursor != null && cursor.getCount() > 0) {
+            int albumColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM);
+            while (cursor.moveToNext()) {
+                String albumName = cursor.getString(albumColumnIndex);
+                // Логика обработки альбомов
+            }
+        }
+        if (cursor != null) {
+            cursor.close();
         }
     }
 
-    public void release() {
+    public void scanPlaylists() {
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri uri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+        String[] projection = {
+                MediaStore.Audio.Playlists.NAME
+        };
+        String sortOrder = MediaStore.Audio.Playlists.NAME + " ASC";
+
+        Cursor cursor = contentResolver.query(uri, projection, null, null, sortOrder);
+        if (cursor != null && cursor.getCount() > 0) {
+            int playlistColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.NAME);
+            while (cursor.moveToNext()) {
+                String playlistName = cursor.getString(playlistColumnIndex);
+                // Логика обработки плейлистов
+            }
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
+    public List<String> getTrackList() {
+        return trackList;
+    }
+
+    public void release() throws IOException {
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        cancelSleepTimer();
+        if (metadataRetriever != null) {
+            metadataRetriever.release();
+            metadataRetriever = null;
+        }
     }
 }

@@ -13,15 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jvmfrog.soulplayer.adapter.SongsAdapter;
+import com.jvmfrog.soulplayer.CustomMediaPlayer;
+import com.jvmfrog.soulplayer.adapter.CustomMediaPlayerAdapter;
 import com.jvmfrog.soulplayer.databinding.FragmentSongsBinding;
 import com.jvmfrog.soulplayer.model.SongsModel;
 import com.jvmfrog.soulplayer.viewmodel.SongsViewModel;
 
+import java.util.List;
+
 public class SongsFragment extends Fragment {
     private FragmentSongsBinding binding;
     private SongsViewModel model;
-    private SongsAdapter adapter;
+    private CustomMediaPlayerAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,7 @@ public class SongsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        model = new ViewModelProvider(this).get(SongsViewModel.class);
+        /*model = new ViewModelProvider(this).get(SongsViewModel.class);
         model.getSongFiles().observe(getViewLifecycleOwner(), songFiles -> {
             for (SongsModel songFile : songFiles) {
                 Log.d("MusicScanner", "Title: " + songFile.getTitle() +
@@ -48,9 +51,16 @@ public class SongsFragment extends Fragment {
                 binding.songsCount.setText(songFiles.size() + " " + "Songs");
             }
             binding.recview.setLayoutManager(new GridLayoutManager(requireActivity(), 1));
-            binding.recview.setAdapter(new SongsAdapter(songFiles));
+            binding.recview.setAdapter(new CustomMediaPlayerAdapter(requireActivity(), songFiles.size()));
         });
-        model.loadSongFiles(requireContext());
+        model.loadSongFiles(requireContext());*/
+
+        CustomMediaPlayer mediaPlayer = CustomMediaPlayer.getInstance(requireContext());
+        mediaPlayer.scanMusic();
+        List<String> trackList = mediaPlayer.getTrackList();
+
+        binding.recview.setLayoutManager(new GridLayoutManager(requireActivity(), 1));
+        binding.recview.setAdapter(new CustomMediaPlayerAdapter(requireActivity(), trackList));
     }
 
     @Override
