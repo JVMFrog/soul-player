@@ -213,7 +213,7 @@ public class CustomMediaPlayer {
 
         Cursor cursor = contentResolver.query(uri, projection, selection, null, sortOrder);
         if (cursor != null && cursor.getCount() > 0) {
-            int dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+            int dataColumnIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             while (cursor.moveToNext()) {
                 String path = cursor.getString(dataColumnIndex);
                 trackList.add(path);

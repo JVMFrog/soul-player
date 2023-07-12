@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jvmfrog.soulplayer.CustomMediaPlayer;
 import com.jvmfrog.soulplayer.R;
+import com.jvmfrog.soulplayer.model.Song;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class CustomMediaPlayerAdapter extends RecyclerView.Adapter<CustomMediaPl
     private LayoutInflater inflater;
     private CustomMediaPlayer mediaPlayer;
 
-    public CustomMediaPlayerAdapter(Context context, List<String> trackList) {
+    public CustomMediaPlayerAdapter(Context context, List<Song> trackList) {
         this.context = context;
         this.trackList = trackList;
         inflater = LayoutInflater.from(context);
