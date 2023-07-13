@@ -27,6 +27,10 @@ public class CustomMediaPlayerAdapter extends RecyclerView.Adapter<CustomMediaPl
         mediaPlayer = CustomMediaPlayer.getInstance(context);
     }
 
+    public void setTrackList(List<String> trackList) {
+        this.trackList = trackList;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -36,15 +40,10 @@ public class CustomMediaPlayerAdapter extends RecyclerView.Adapter<CustomMediaPl
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String trackPath = trackList.get(holder.getAdapterPosition());
+        String trackPath = trackList.get(position);
+        mediaPlayer.setTrackList(trackList);
         holder.titleTextView.setText(mediaPlayer.getCurrentTrackTitle());
         holder.artistTextView.setText(mediaPlayer.getCurrentTrackAlbum());
-
-        holder.itemView.setOnClickListener(v -> {
-            mediaPlayer.setTrackList(trackList);
-            mediaPlayer.setCurrentTrackIndex(holder.getAdapterPosition());
-            mediaPlayer.play();
-        });
     }
 
     @Override

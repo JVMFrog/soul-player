@@ -48,6 +48,9 @@ public class SongsViewModel extends ViewModel {
         if (musicCursor != null) {
             musicCursor.close();
         }
-        songFilesLiveData.setValue(musicFiles);
+
+        if (!musicFiles.isEmpty()) {
+            songFilesLiveData.setValue(musicFiles);
+        }
     }
 }

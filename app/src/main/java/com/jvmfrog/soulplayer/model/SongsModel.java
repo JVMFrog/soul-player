@@ -7,6 +7,10 @@ public class SongsModel {
     private String path;
     private String cover;
 
+    public SongsModel(String path) {
+        this.path = path;
+    }
+
     public SongsModel(String title, String artist, String album, String path) {
         this.title = title;
         this.artist = artist;

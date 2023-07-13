@@ -9,6 +9,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
@@ -99,6 +100,7 @@ public class CustomMediaPlayer {
                 try {
                     mediaPlayer.setDataSource(trackList.get(currentTrackIndex));
                     mediaPlayer.prepare();
+                    Log.d("MEDIA PLAYER: " + "Playing - ", getCurrentTrackTitle());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
